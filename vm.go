@@ -2,6 +2,7 @@ package goja
 
 import (
 	"fmt"
+	"log"
 	"math"
 	"runtime"
 	"strconv"
@@ -485,6 +486,13 @@ func (vm *vm) init() {
 }
 
 func (vm *vm) run() {
+	defer func() {
+		e := recover()
+		if e != nil {
+			log.Println("PANIC debug:", vm.prg.code[vm.pc], "[funcName]", vm.prg.funcName, "[src]", vm.prg.src.Position(vm.prg.sourceOffset(vm.pc)).String())
+			panic(e)
+		}
+	}()
 	vm.halt = false
 	interrupted := false
 	ticks := 0
